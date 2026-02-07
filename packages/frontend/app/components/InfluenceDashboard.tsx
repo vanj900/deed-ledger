@@ -71,7 +71,7 @@ export default function InfluenceDashboard() {
       <div className="p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
         <p className="text-sm text-yellow-800">
           ⚠️ <strong>Demurrage active:</strong> Your influence decays {(stats.decayRate * 100).toFixed(1)}% per week without contribution.
-          Complete deeds or verify others' work to maintain reputation.
+          Complete deeds or verify others&apos; work to maintain reputation.
         </p>
       </div>
     </div>
