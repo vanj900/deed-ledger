@@ -19,6 +19,25 @@ type Signature {
   verification: String
 }
 
+type Scar {
+  deedId: StreamID!
+  scarNote: String!
+  scarverDID: DID!
+  createdAt: DateTime!
+  recoveryNote: String  # optional — populated when recovery is submitted inline
+}
+
+type RecoveryDeed @createModel(accountRelation: LIST) {
+  deedId: StreamID! @immutable   # StreamID of the scarred Deed
+  controller: DID! @immutable
+  createdAt: DateTime!
+  recoveryNote: String!
+  recovererDID: DID! @immutable
+  status: String                 # "pending", "approved", "rejected"
+  reviewedAt: DateTime
+  reviewerDID: DID
+}
+
 type UserReputation @createModel(accountRelation: SINGLE) {
   controller: DID! @immutable
   deedCount: Int!

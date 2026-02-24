@@ -18,6 +18,28 @@ export interface Deed {
   nicheTags?: string[];
 }
 
+export interface Scar {
+  deedId: string; // StreamID
+  scarNote: string;
+  scarverDID: string; // DID
+  createdAt: string; // DateTime
+  recoveryNote?: string;
+}
+
+export type RecoveryStatus = 'pending' | 'approved' | 'rejected';
+
+export interface RecoveryDeed {
+  id: string;
+  deedId: string; // StreamID — linked to the scarred Deed
+  controller: string; // DID
+  createdAt: string; // DateTime
+  recoveryNote: string;
+  recovererDID: string; // DID
+  status: RecoveryStatus;
+  reviewedAt?: string; // DateTime
+  reviewerDID?: string; // DID
+}
+
 export interface NicheTag {
   tag: string;
   score: number;

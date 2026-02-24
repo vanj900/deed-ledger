@@ -47,7 +47,7 @@ export function setBroadcastEnabled(enabled: boolean): void {
 }
 
 export const broadcastDeedEvent = async (
-  type: 'signal' | 'verify' | 'scar',
+  type: 'signal' | 'verify' | 'scar' | 'recovery' | 'recovery_approved' | 'recovery_rejected',
   deedId: string,
   content: string,
   extraTags?: string[][]

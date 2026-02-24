@@ -2,11 +2,19 @@
 
 import { useState, useEffect } from 'react'
 
+interface ScarSummary {
+  deedId: string
+  scarNote: string
+  createdAt: string
+  recoveryStatus?: 'pending' | 'approved' | 'rejected'
+}
+
 interface InfluenceStats {
   totalScore: number
   deedCount: number
   status: string
   decayRate: number
+  scars: ScarSummary[]
 }
 
 export default function InfluenceDashboard() {
@@ -14,7 +22,8 @@ export default function InfluenceDashboard() {
     totalScore: 0,
     deedCount: 0,
     status: 'invite_pending',
-    decayRate: 0.05
+    decayRate: 0.05,
+    scars: [],
   })
 
   useEffect(() => {
@@ -23,7 +32,15 @@ export default function InfluenceDashboard() {
       totalScore: 42.5,
       deedCount: 3,
       status: 'observer',
-      decayRate: 0.05
+      decayRate: 0.05,
+      scars: [
+        {
+          deedId: 'example-deed-id-1',
+          scarNote: 'Disputed: incomplete deliverable',
+          createdAt: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString(),
+          recoveryStatus: undefined,
+        },
+      ],
     })
   }, [])
 
@@ -33,6 +50,15 @@ export default function InfluenceDashboard() {
       case 'observer': return 'text-blue-700 bg-blue-100'
       case 'signal_sent': return 'text-yellow-700 bg-yellow-100'
       default: return 'text-gray-700 bg-gray-100'
+    }
+  }
+
+  const getRecoveryBadge = (status?: ScarSummary['recoveryStatus']) => {
+    switch (status) {
+      case 'pending': return <span className="text-xs px-2 py-0.5 rounded-full bg-amber-100 text-amber-700">⏳ Recovery pending</span>
+      case 'approved': return <span className="text-xs px-2 py-0.5 rounded-full bg-green-100 text-green-700">✅ Recovery approved</span>
+      case 'rejected': return <span className="text-xs px-2 py-0.5 rounded-full bg-red-100 text-red-700">❌ Recovery rejected</span>
+      default: return null
     }
   }
 
@@ -74,6 +100,33 @@ export default function InfluenceDashboard() {
           Complete deeds or verify others&apos; work to maintain reputation.
         </p>
       </div>
+
+      {stats.scars.length > 0 && (
+        <div className="p-4 bg-red-50 border border-red-200 rounded-lg space-y-3">
+          <p className="text-sm font-semibold text-red-800">🩸 Active Scars ({stats.scars.length})</p>
+          {stats.scars.map((scar) => (
+            <div key={scar.deedId} className="flex items-start justify-between gap-3 text-sm">
+              <div className="flex-1">
+                <p className="text-red-700">{scar.scarNote}</p>
+                <p className="text-red-400 text-xs mt-0.5">
+                  {new Date(scar.createdAt).toLocaleDateString()}
+                </p>
+              </div>
+              <div className="flex flex-col items-end gap-1">
+                {getRecoveryBadge(scar.recoveryStatus)}
+                {!scar.recoveryStatus && (
+                  <a
+                    href="#scar-recovery"
+                    className="text-xs px-2 py-0.5 rounded-full bg-amber-600 text-white hover:bg-amber-500 transition"
+                  >
+                    🩹 Submit Recovery
+                  </a>
+                )}
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   )
 }
