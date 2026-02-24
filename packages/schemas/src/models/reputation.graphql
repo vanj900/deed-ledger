@@ -24,7 +24,6 @@ type Scar {
   scarNote: String!
   scarverDID: DID!
   createdAt: DateTime!
-  recoveryNote: String  # optional — populated when recovery is submitted inline
 }
 
 type RecoveryDeed @createModel(accountRelation: LIST) {

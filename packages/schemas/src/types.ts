@@ -23,7 +23,6 @@ export interface Scar {
   scarNote: string;
   scarverDID: string; // DID
   createdAt: string; // DateTime
-  recoveryNote?: string;
 }
 
 export type RecoveryStatus = 'pending' | 'approved' | 'rejected';
