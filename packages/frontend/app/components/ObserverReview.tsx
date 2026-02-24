@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { useDIDAuth } from '../../context/DIDContext';
 import { composeClient } from '../../lib/ceramic';
 import { formatDistanceToNow } from 'date-fns';
+import { broadcastDeedEvent } from '../lib/nostr';
 
 type PendingDeed = {
   id: string;
@@ -57,6 +58,7 @@ export default function ObserverReview() {
         }`,
         { id: deedId, verifierDID: did!.id }
       );
+      broadcastDeedEvent('verify', deedId, 'Deed verified +influence by observer');
     } else {
       await composeClient.executeQuery(
         `mutation AddScar($deedId: ID!, $scarNote: String!, $scarverDID: String!) {
@@ -64,6 +66,7 @@ export default function ObserverReview() {
         }`,
         { deedId, scarNote: scarNote ?? 'Disputed', scarverDID: did!.id }
       );
+      broadcastDeedEvent('scar', deedId, `Scar added: ${scarNote ?? 'Disputed'}`);
     }
     alert(approve ? '✅ Verified — influence awarded' : '🩸 Scar added — visible mark');
     loadPending();

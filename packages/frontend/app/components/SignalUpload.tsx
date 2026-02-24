@@ -5,6 +5,7 @@ import { sha256 } from '@noble/hashes/sha256'
 import { bytesToHex } from '@noble/hashes/utils'
 import { useDIDAuth } from '../../context/DIDContext'
 import { composeClient } from '../../lib/ceramic'
+import { broadcastDeedEvent } from '../lib/nostr'
 
 export default function SignalUpload() {
   const { isAuthenticated, loginWithKeypair } = useDIDAuth()
@@ -47,6 +48,12 @@ export default function SignalUpload() {
         console.warn('Deed mutation errors:', result.errors)
       } else {
         console.log('Deed created:', result.data)
+        const deedIdentifier = (result.data as Record<string, any>)?.createDeed?.document?.id ?? hashHex
+        broadcastDeedEvent(
+          'signal',
+          deedIdentifier,
+          `New deed signal uploaded: ${signal} ${hashHex}`
+        )
       }
 
       setSignal('')

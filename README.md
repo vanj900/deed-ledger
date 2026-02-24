@@ -94,16 +94,16 @@ pnpm type-check
 pnpm build
 ```
 
-## Week 4 MVP Goals
+## MVP Status
 
 - [x] Monorepo structure with pnpm workspaces
 - [x] Core Ceramic schema for Deed and UserReputation
-- [x] DID authentication (keypair or wagmi) — MERGED
+- [x] DID authentication (keypair or wagmi) — COMPLETE
 - [x] Signal upload form with hash proof
 - [x] Event log viewer showing deed history
 - [x] Influence dashboard with decay visualization
 - [x] Observer review interface + scars
-- [ ] Nostr event broadcasting
+- [x] Nostr event broadcasting — COMPLETE
 - [ ] Supabase indexing integration (optional)
 
 ## Contributing
