@@ -2,6 +2,7 @@ import DIDConnect from './components/DIDConnect'
 import SignalUpload from './components/SignalUpload'
 import EventLog from './components/EventLog'
 import InfluenceDashboard from './components/InfluenceDashboard'
+import ObserverReview from './components/ObserverReview'
 
 export default function Home() {
   return (
@@ -38,6 +39,12 @@ export default function Home() {
         <section className="card md:col-span-2">
           <h2 className="text-2xl font-semibold mb-4">Event Log</h2>
           <EventLog />
+        </section>
+
+        {/* Observer Review */}
+        <section className="card md:col-span-2">
+          <h2 className="text-2xl font-semibold mb-4">Observer Review</h2>
+          <ObserverReview />
         </section>
       </div>
 

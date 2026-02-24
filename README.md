@@ -43,11 +43,7 @@ Progressive trust ladder with increasing commitment and influence:
 
 ## Seed Target
 
-**Week 4 MVP focus**: Fintech ops, DevOps engineers, and growth marketers. People who:
-- Understand skin-in-the-game mechanics
-- Value portable reputation across organizations
-- Need verifiable proof of operational competence
-- Appreciate boring, effective infrastructure
+Fintech ops, DevOps engineers, and growth marketers who get skin-in-the-game, want portable reputation, and hate centralized bullshit.
 
 ## Quick Start
 
@@ -102,13 +98,13 @@ pnpm build
 
 - [x] Monorepo structure with pnpm workspaces
 - [x] Core Ceramic schema for Deed and UserReputation
-- [x] DID authentication (keypair or wagmi)
+- [x] DID authentication (keypair or wagmi) — MERGED
 - [x] Signal upload form with hash proof
 - [x] Event log viewer showing deed history
 - [x] Influence dashboard with decay visualization
-- [ ] Observer review interface (stub)
-- [x] Nostr event broadcasting (stub)
-- [x] Supabase indexing integration (stub)
+- [x] Observer review interface + scars
+- [ ] Nostr event broadcasting
+- [ ] Supabase indexing integration (optional)
 
 ## Contributing
 
