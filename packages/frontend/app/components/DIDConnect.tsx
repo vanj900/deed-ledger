@@ -1,38 +1,50 @@
 'use client'
 
-import { useState } from 'react'
-import { useDID } from '../lib/did'
+import { useDIDAuth } from '../../context/DIDContext'
 
 export default function DIDConnect() {
-  const { did, connect, disconnect, isConnecting } = useDID()
+  const { did, isAuthenticated, loading, loginWithKeypair, loginWithWallet, logout, address } = useDIDAuth()
 
   return (
     <div className="space-y-4">
-      {!did ? (
+      {!isAuthenticated ? (
         <>
           <p className="text-sm text-gray-600">
             Connect your DID to interact with the reputation ledger.
           </p>
           <button
-            onClick={connect}
-            disabled={isConnecting}
+            onClick={loginWithKeypair}
+            disabled={loading}
             className="btn btn-primary w-full disabled:opacity-50"
           >
-            {isConnecting ? 'Connecting...' : 'Connect DID'}
+            {loading ? 'Connecting...' : '🔑 Login with Pure Keypair (recommended)'}
+          </button>
+          <button
+            onClick={loginWithWallet}
+            disabled={loading}
+            className="btn btn-secondary w-full disabled:opacity-50"
+          >
+            {loading ? 'Connecting...' : '💰 Connect Wallet (did:pkh)'}
           </button>
           <p className="text-xs text-gray-500">
-            A keypair will be generated for you. In production, use a proper wallet.
+            Keypair: sovereign, effort-based, no third-party required.
           </p>
         </>
       ) : (
         <>
           <div className="p-3 bg-trust-50 rounded border border-trust-200">
+            <p className="text-xs font-semibold text-trust-700 mb-1">Connected DID</p>
             <p className="text-xs font-mono text-trust-800 break-all">
-              {did}
+              {did?.id}
             </p>
+            {address && (
+              <p className="text-xs text-trust-600 mt-1">
+                Wallet: {address.slice(0, 6)}…{address.slice(-4)}
+              </p>
+            )}
           </div>
           <button
-            onClick={disconnect}
+            onClick={logout}
             className="btn btn-secondary w-full"
           >
             Disconnect

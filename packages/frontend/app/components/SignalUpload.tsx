@@ -3,15 +3,21 @@
 import { useState } from 'react'
 import { sha256 } from '@noble/hashes/sha256'
 import { bytesToHex } from '@noble/hashes/utils'
+import { useDIDAuth } from '../../context/DIDContext'
+import { composeClient } from '../../lib/ceramic'
 
 export default function SignalUpload() {
+  const { isAuthenticated, loginWithKeypair } = useDIDAuth()
   const [signal, setSignal] = useState('')
   const [hash, setHash] = useState<string | null>(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [error, setError] = useState<string | null>(null)
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+    if (!isAuthenticated) return
     setIsSubmitting(true)
+    setError(null)
 
     try {
       // Create hash proof
@@ -19,16 +25,53 @@ export default function SignalUpload() {
       const hashHex = bytesToHex(hashBytes)
       setHash(hashHex)
 
-      // In production: Submit to Ceramic/Nostr
-      console.log('Signal hash:', hashHex)
-      
-      // Reset form
+      // Submit deed to Ceramic via ComposeDB
+      const result = await composeClient.executeQuery(`
+        mutation CreateDeed($input: CreateDeedInput!) {
+          createDeed(input: $input) {
+            document { id }
+          }
+        }
+      `, {
+        input: {
+          content: {
+            actionType: 'signal',
+            proofHash: hashHex,
+            description: signal,
+            timestamp: new Date().toISOString(),
+          },
+        },
+      })
+
+      if (result.errors?.length) {
+        console.warn('Deed mutation errors:', result.errors)
+      } else {
+        console.log('Deed created:', result.data)
+      }
+
       setSignal('')
-    } catch (error) {
-      console.error('Error submitting signal:', error)
+    } catch (err) {
+      console.error('Error submitting signal:', err)
+      setError('Failed to submit signal. Check console for details.')
     } finally {
       setIsSubmitting(false)
     }
+  }
+
+  if (!isAuthenticated) {
+    return (
+      <div className="space-y-4">
+        <p className="text-sm text-gray-600">
+          You must connect a DID before submitting a signal.
+        </p>
+        <button
+          onClick={loginWithKeypair}
+          className="btn btn-primary w-full"
+        >
+          🔑 Connect DID first
+        </button>
+      </div>
+    )
   }
 
   return (
@@ -52,9 +95,15 @@ export default function SignalUpload() {
           disabled={!signal || isSubmitting}
           className="btn btn-primary w-full disabled:opacity-50"
         >
-          {isSubmitting ? 'Creating Hash...' : 'Submit Signal'}
+          {isSubmitting ? 'Submitting...' : 'Submit Signal'}
         </button>
       </form>
+
+      {error && (
+        <div className="p-3 bg-red-50 rounded border border-red-200">
+          <p className="text-xs text-red-700">{error}</p>
+        </div>
+      )}
 
       {hash && (
         <div className="p-3 bg-green-50 rounded border border-green-200">
