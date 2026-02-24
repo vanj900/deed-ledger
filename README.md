@@ -102,13 +102,13 @@ pnpm build
 
 - [x] Monorepo structure with pnpm workspaces
 - [x] Core Ceramic schema for Deed and UserReputation
-- [ ] DID authentication (keypair or wagmi)
-- [ ] Signal upload form with hash proof
-- [ ] Event log viewer showing deed history
-- [ ] Influence dashboard with decay visualization
+- [x] DID authentication (keypair or wagmi)
+- [x] Signal upload form with hash proof
+- [x] Event log viewer showing deed history
+- [x] Influence dashboard with decay visualization
 - [ ] Observer review interface (stub)
-- [ ] Nostr event broadcasting (stub)
-- [ ] Supabase indexing integration (stub)
+- [x] Nostr event broadcasting (stub)
+- [x] Supabase indexing integration (stub)
 
 ## Contributing
 
