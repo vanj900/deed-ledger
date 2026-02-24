@@ -3,6 +3,7 @@ import SignalUpload from './components/SignalUpload'
 import EventLog from './components/EventLog'
 import InfluenceDashboard from './components/InfluenceDashboard'
 import ObserverReview from './components/ObserverReview'
+import ScarRecovery from './components/ScarRecovery'
 
 export default function Home() {
   return (
@@ -39,6 +40,11 @@ export default function Home() {
         <section className="card md:col-span-2">
           <h2 className="text-2xl font-semibold mb-4">Event Log</h2>
           <EventLog />
+        </section>
+
+        {/* Scar Recovery */}
+        <section id="scar-recovery" className="card md:col-span-2">
+          <ScarRecovery />
         </section>
 
         {/* Observer Review */}

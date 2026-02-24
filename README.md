@@ -94,17 +94,24 @@ pnpm type-check
 pnpm build
 ```
 
-## MVP Status
+## MVP Status — COMPLETE (Feb 2026)
 
-- [x] Monorepo structure with pnpm workspaces
-- [x] Core Ceramic schema for Deed and UserReputation
-- [x] DID authentication (keypair or wagmi) — COMPLETE
-- [x] Signal upload form with hash proof
-- [x] Event log viewer showing deed history
-- [x] Influence dashboard with decay visualization
-- [x] Observer review interface + scars
-- [x] Nostr event broadcasting — COMPLETE
-- [ ] Supabase indexing integration (optional)
+**✅ Shipped**
+- Monorepo structure with pnpm workspaces
+- Core Ceramic schema for Deed + UserReputation + RecoveryDeed
+- DID authentication (keypair or wagmi)
+- Signal upload form with hash proof
+- Event log viewer showing deed history
+- Influence dashboard with decay visualization
+- Observer review interface + scars
+- Nostr event broadcasting for all actions
+- Visible scars recovery / rehabilitation flow
+
+**Note for developers:**
+After any schema change (new models like RecoveryDeed), run `pnpm deploy:models` locally to update Ceramic Clay testnet.
+Then `pnpm dev` and test end-to-end: create scar → submit recovery → observer approve.
+
+Supabase indexing remains optional (fast queries only).
 
 ## Contributing
 

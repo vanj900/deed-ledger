@@ -16,9 +16,18 @@ type PendingDeed = {
   verifiers: string[];
 };
 
+type PendingRecovery = {
+  id: string;
+  deedId: string;
+  recoveryNote: string;
+  recovererDID: string;
+  createdAt: string;
+};
+
 export default function ObserverReview() {
   const { isAuthenticated, did } = useDIDAuth();
   const [pendingDeeds, setPendingDeeds] = useState<PendingDeed[]>([]);
+  const [pendingRecoveries, setPendingRecoveries] = useState<PendingRecovery[]>([]);
   const [loading, setLoading] = useState(true);
 
   const loadPending = async () => {
@@ -44,9 +53,36 @@ export default function ObserverReview() {
     setLoading(false);
   };
 
+  const loadPendingRecoveries = async () => {
+    if (!did) return;
+    const result = await composeClient.executeQuery(`
+      query {
+        recoveryDeedIndex(filters: { status: { equalTo: "pending" } }, first: 20) {
+          edges {
+            node {
+              id
+              deedId
+              recoveryNote
+              recovererDID
+              createdAt
+            }
+          }
+        }
+      }
+    `);
+    setPendingRecoveries(
+      ((result.data as Record<string, any>)?.recoveryDeedIndex?.edges ?? []).map(
+        (e: Record<string, any>) => e.node as PendingRecovery
+      )
+    );
+  };
+
   useEffect(() => {
-    if (isAuthenticated) loadPending();
-    // loadPending is defined in render scope; including it would cause an infinite loop
+    if (isAuthenticated) {
+      loadPending();
+      loadPendingRecoveries();
+    }
+    // loadPending/loadPendingRecoveries are defined in render scope; including them would cause an infinite loop
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isAuthenticated]);
 
@@ -70,6 +106,24 @@ export default function ObserverReview() {
     }
     alert(approve ? '✅ Verified — influence awarded' : '🩸 Scar added — visible mark');
     loadPending();
+  };
+
+  const reviewRecovery = async (recoveryId: string, deedId: string, approve: boolean) => {
+    await composeClient.executeQuery(
+      `mutation ReviewRecovery($id: ID!, $status: String!, $reviewerDID: String!) {
+        reviewRecovery(input: { id: $id, status: $status, reviewerDID: $reviewerDID }) {
+          document { id }
+        }
+      }`,
+      { id: recoveryId, status: approve ? 'approved' : 'rejected', reviewerDID: did!.id }
+    );
+    if (approve) {
+      broadcastDeedEvent('recovery_approved', deedId, 'Recovery approved +rehab');
+    } else {
+      broadcastDeedEvent('recovery_rejected', deedId, 'Recovery rejected');
+    }
+    alert(approve ? '✅ Recovery approved — scar weight reduced' : '❌ Recovery rejected');
+    loadPendingRecoveries();
   };
 
   if (!isAuthenticated) return <div className="text-red-500">Login first, Observer.</div>;
@@ -117,6 +171,44 @@ export default function ObserverReview() {
           </div>
         ))}
       </div>
+
+      {pendingRecoveries.length > 0 && (
+        <div className="mt-12">
+          <h2 className="text-2xl font-bold mb-6 text-amber-400">Review Recovery — Pending Rehab</h2>
+          <div className="space-y-6">
+            {pendingRecoveries.map((recovery) => (
+              <div key={recovery.id} className="bg-zinc-900 border border-amber-900 p-6 rounded-xl">
+                <div className="flex justify-between mb-3">
+                  <span className="text-amber-400 font-mono text-sm">
+                    {recovery.recovererDID.slice(0, 12)}...
+                  </span>
+                  <span className="text-zinc-500 text-sm">
+                    {formatDistanceToNow(new Date(recovery.createdAt), { addSuffix: true })}
+                  </span>
+                </div>
+                <p className="text-zinc-400 text-xs mb-2">
+                  Deed: <span className="font-mono">{recovery.deedId}</span>
+                </p>
+                <p className="text-white mb-6">{recovery.recoveryNote}</p>
+                <div className="flex gap-3">
+                  <button
+                    onClick={() => reviewRecovery(recovery.id, recovery.deedId, true)}
+                    className="flex-1 bg-emerald-600 hover:bg-emerald-500 py-3 rounded-xl font-bold transition"
+                  >
+                    ✅ APPROVE — Reduce Scar
+                  </button>
+                  <button
+                    onClick={() => reviewRecovery(recovery.id, recovery.deedId, false)}
+                    className="flex-1 bg-red-600 hover:bg-red-500 py-3 rounded-xl font-bold transition"
+                  >
+                    ❌ REJECT
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   );
 }
